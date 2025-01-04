@@ -1,31 +1,23 @@
 require('dotenv').config();
-const express = require('express'); //commonjs
-const configViewEngine = require('./config/viewEngine');
-const apiRoutes = require('./routes/api');
-const sequelize = require('./config/database');
-const { getHomepage } = require('./controllers/homeController');
+const express = require('express'); // Sử dụng express
+const apiRoutes = require('./routes/api'); // Đảm bảo bạn có tệp routes/api.js cho các API
+const { connectToDatabase } = require('./config/database'); // Import kết nối cơ sở dữ liệu từ database.js
 
+// Khởi tạo express app
 const app = express();
 const port = process.env.PORT || 8888;
 
-//config req.body
-app.use(express.json()) // for json
-app.use(express.urlencoded({ extended: true })) // for form data
+// Kết nối đến cơ sở dữ liệu
+connectToDatabase();
 
-//config template engine
-configViewEngine(app);
+// Cấu hình xử lý body request (dành cho JSON và form data)
+app.use(express.json()); // for JSON
+app.use(express.urlencoded({ extended: true })); // for form data
 
-//khai báo route
-app.use('/v1/api/', apiRoutes);
-app.use('/', getHomepage);
+// Khai báo API routes
+app.use('/api/', apiRoutes); // API route sẽ được định nghĩa trong ./routes/api.js
 
-
-(async () => {
-    try {
-        app.listen(port, () => {
-            console.log(`Backend Nodejs App listening on port ${port}`)
-        })
-    } catch (error) {
-        console.log(">>> Error connect to DB: ", error)
-    }
-})()
+// Lắng nghe server
+app.listen(port, () => {
+    console.log(`Backend Nodejs App listening on port ${port}`);
+});
