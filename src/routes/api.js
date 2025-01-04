@@ -1,8 +1,9 @@
 // src/routes/userRoutes.js
 const express = require('express');
-const router = express.Router();
+const { createUser } = require('../controllers/userController')
 
-router.get('/', async (req, res) => {
-    return res.status(200).json("Hello world api")
-});
-module.exports = router;
+const apirouter = express.Router();
+
+apirouter.post('/register', createUser)
+
+module.exports = apirouter;
