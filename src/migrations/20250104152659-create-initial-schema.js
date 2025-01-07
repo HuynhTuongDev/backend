@@ -2,262 +2,435 @@
 
 module.exports = {
   async up(queryInterface, Sequelize) {
-    // Tạo bảng Users
-    await queryInterface.createTable('Users', {
-      ID: {
+    //Table brands
+    await queryInterface.createTable('brands', {
+      brandID: {
         type: Sequelize.BIGINT,
+        primaryKey: true,
         autoIncrement: true,
-        primaryKey: true, // Đảm bảo rằng cột này là khóa chính
       },
-      FullName: {
-        type: Sequelize.STRING,
+      brandName: {
+        type: Sequelize.STRING(50),
         allowNull: false,
       },
-      Address: Sequelize.STRING,
-      Phone: Sequelize.STRING(20),
-      Email: {
+    });
+
+    //Table roles
+    await queryInterface.createTable('roles', {
+      roleID: {
+        type: Sequelize.BIGINT,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      roleName: {
+        type: Sequelize.STRING(50),
+        allowNull: false,
+      },
+    });
+
+    //Table users
+    await queryInterface.createTable('users', {
+      userID: {
+        type: Sequelize.BIGINT,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      fullName: {
+        type: Sequelize.STRING(50),
+        allowNull: false,
+      },
+      phone: {
+        type: Sequelize.STRING(20),
+      },
+      email: {
         type: Sequelize.STRING,
         allowNull: false,
         unique: true,
       },
-      Password: {
-        type: Sequelize.STRING,
+      password: {
+        type: Sequelize.STRING(255),
         allowNull: false,
       },
-      Role: Sequelize.STRING(50),
-      Status: Sequelize.STRING(50),
-      LogTime: Sequelize.DATE,
-      FailedAttempt: {
+      address: {
+        type: Sequelize.STRING(50),
+      },
+      roleID: {
+        type: Sequelize.BIGINT,
+        allowNull: false,
+      },
+      status: {
+        type: Sequelize.STRING(10),
+        allowNull: false,
+      },
+      failedAttempt: {
         type: Sequelize.INTEGER,
         defaultValue: 0,
       },
-    });
-
-    // Tạo bảng Category
-    await queryInterface.createTable('Category', {
-      ID: {
-        type: Sequelize.BIGINT,
-        autoIncrement: true,
-        primaryKey: true,
-      },
-      Name: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
-      CreateTime: Sequelize.DATE,
-      UpdateTime: Sequelize.DATE,
-    });
-
-    // Tạo bảng Product
-    await queryInterface.createTable('Product', {
-      ID: {
-        type: Sequelize.BIGINT,
-        autoIncrement: true,
-        primaryKey: true,
-      },
-      Name: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
-      Descr: Sequelize.STRING,
-      Image: Sequelize.STRING,
-      CategoryID: {
-        type: Sequelize.BIGINT,
-        references: {
-          model: 'Category', // Kiểm tra lại tên bảng
-          key: 'ID', // Kiểm tra lại cột khóa chính
-        },
-        onDelete: 'SET NULL',
-      },
-      Color: Sequelize.STRING(50),
-      Version: Sequelize.STRING(50),
-      Price: {
-        type: Sequelize.DOUBLE,
-        allowNull: false,
-      },
-      Discount: {
-        type: Sequelize.INTEGER,
-        defaultValue: 0,
-      },
-    });
-
-    // Tạo bảng RefreshToken
-    await queryInterface.createTable('RefreshToken', {
-      ID: {
-        type: Sequelize.BIGINT,
-        autoIncrement: true,
-        primaryKey: true,
-      },
-      UserID: {
-        type: Sequelize.BIGINT,
-        allowNull: false,
-        references: {
-          model: 'Users', // Kiểm tra lại tên bảng
-          key: 'ID', // Kiểm tra lại cột khóa chính
-        },
-        onDelete: 'CASCADE',
-      },
-      Token: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
-      ExpiryTime: {
+      logTime: {
         type: Sequelize.DATE,
-        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP + interval '1 week'"),
+      },
+      createdAt: {
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW,
+      },
+      updatedAt: {
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW,
+      },
+    });
+    await queryInterface.addConstraint('users', {
+      fields: ['roleID'],
+      type: 'foreign key',
+      name: 'fk_role',
+      references: {
+        table: 'roles',
+        field: 'roleID',
       },
     });
 
-    // Tạo bảng Cart
-    await queryInterface.createTable('Cart', {
-      ID: {
-        type: Sequelize.BIGINT,
-        autoIncrement: true,
-        primaryKey: true,
-        field: 'ID',
-      },
-      UserID: {
-        type: Sequelize.BIGINT,
-        references: {
-          model: 'Users',
-          key: 'ID',
-        },
-        onDelete: 'CASCADE',
-      },
-      ProductID: {
-        type: Sequelize.BIGINT,
-        references: {
-          model: 'Product',
-          key: 'ID',
-        },
-        onDelete: 'CASCADE',
-      },
-      Quantity: {
+    //refreshTokens
+    await queryInterface.createTable('refreshTokens', {
+      tokenID: {
         type: Sequelize.INTEGER,
-        defaultValue: 1,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      userID: {
+        type: Sequelize.BIGINT,
+        allowNull: false,
+      },
+      token: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      expiryTime: {
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP + INTERVAL \'1 week\''),
+      },
+      createdAt: {
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW,
+      },
+      updatedAt: {
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW,
+      },
+    });
+    await queryInterface.addConstraint('refreshTokens', {
+      fields: ['userID'],
+      type: 'foreign key',
+      name: 'fk_user',
+      references: {
+        table: 'users',
+        field: 'userID',
+      },
+      onDelete: 'CASCADE',
+    });
+
+    //Table Categories
+    await queryInterface.createTable('categories', {
+      categoryID: {
+        type: Sequelize.BIGINT,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      categoryName: {
+        type: Sequelize.STRING(50),
+        allowNull: false,
+      },
+      createTime: {
+        type: Sequelize.DATE,
+      },
+      updateTime: {
+        type: Sequelize.DATE,
       },
     });
 
-    // Tạo bảng Order
-    await queryInterface.createTable('Order', {
-      ID: {
+    //Table Products
+    await queryInterface.createTable('products', {
+      productID: {
         type: Sequelize.BIGINT,
-        autoIncrement: true,
         primaryKey: true,
-        field: 'ID',
-      },
-      Phone: Sequelize.STRING(20),
-      Email: Sequelize.STRING,
-      FullName: Sequelize.STRING,
-      Address: Sequelize.STRING,
-      District: Sequelize.STRING,
-      Ward: Sequelize.STRING,
-      Province: Sequelize.STRING,
-      CustomNote: Sequelize.TEXT,
-      PaymentMethod: Sequelize.STRING(50),
-      Status: Sequelize.STRING(50),
-      CreateTime: Sequelize.DATE,
-      UserID: {
-        type: Sequelize.BIGINT,
-        references: {
-          model: 'Users',
-          key: 'ID',
-        },
-        onDelete: 'SET NULL',
-      },
-    });
-
-    // Tạo bảng Order_Detail
-    await queryInterface.createTable('Order_Detail', {
-      ID: {
-        type: Sequelize.BIGINT,
         autoIncrement: true,
-        primaryKey: true,
-        field: 'ID',
       },
-      Quantity: {
+      name: {
+        type: Sequelize.STRING(100),
+        allowNull: false,
+      },
+      price: {
+        type: Sequelize.DECIMAL(18, 2),
+        allowNull: false,
+      },
+      quantity: {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
-      Original_price: {
-        type: Sequelize.DOUBLE,
-        allowNull: false,
-      },
-      Sale_price: {
-        type: Sequelize.DOUBLE,
-        allowNull: false,
-      },
-      ProductID: {
+      categoryID: {
         type: Sequelize.BIGINT,
-        references: {
-          model: 'Product',
-          key: 'ID',
-        },
-        onDelete: 'CASCADE',
       },
-      OrderID: {
+      brandID: {
         type: Sequelize.BIGINT,
-        references: {
-          model: 'Order',
-          key: 'ID',
-        },
-        onDelete: 'CASCADE',
+      },
+      imageURL: {
+        type: Sequelize.STRING(255),
+      },
+      createdAt: {
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW,
+      },
+      updatedAt: {
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW,
+      },
+    });
+    await queryInterface.addConstraint('products', {
+      fields: ['categoryID'],
+      type: 'foreign key',
+      name: 'fk_category',
+      references: {
+        table: 'categories',
+        field: 'categoryID',
+      },
+    });
+    await queryInterface.addConstraint('products', {
+      fields: ['brandID'],
+      type: 'foreign key',
+      name: 'fk_brand',
+      references: {
+        table: 'brands',
+        field: 'brandID',
       },
     });
 
-    // Tạo bảng Feedback
-    await queryInterface.createTable('Feedback', {
-      ID: {
+    //Table ProductDetails
+    await queryInterface.createTable('productDetails', {
+      productDetailID: {
         type: Sequelize.BIGINT,
-        autoIncrement: true,
         primaryKey: true,
-        field: 'ID',
+        autoIncrement: true,
       },
-      UserID: {
+      productID: {
         type: Sequelize.BIGINT,
-        references: {
-          model: 'Users',
-          key: 'ID',
-        },
-        onDelete: 'CASCADE',
+        allowNull: false,
       },
-      ProductID: {
-        type: Sequelize.BIGINT,
-        references: {
-          model: 'Product',
-          key: 'ID',
-        },
-        onDelete: 'CASCADE',
+      description: {
+        type: Sequelize.TEXT,
+        allowNull: false,
       },
-      Comment: Sequelize.TEXT,
-      CreateTime: Sequelize.DATE,
-      Status: Sequelize.STRING(255),
+      specifications: {
+        type: Sequelize.TEXT,
+        allowNull: false,
+      },
+      warrantyPeriod: {
+        type: Sequelize.STRING(50),
+        allowNull: false,
+      },
+      createdAt: {
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW,
+      },
+      updatedAt: {
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW,
+      },
+    });
+    await queryInterface.addConstraint('productDetails', {
+      fields: ['productID'],
+      type: 'foreign key',
+      name: 'fk_product',
+      references: {
+        table: 'products',
+        field: 'productID',
+      },
     });
 
-    // Tạo bảng Slider
-    await queryInterface.createTable('Slider', {
-      ID: {
+    //Table Orders
+    await queryInterface.createTable('orders', {
+      orderID: {
         type: Sequelize.BIGINT,
-        autoIncrement: true,
         primaryKey: true,
-        field: 'ID',
+        autoIncrement: true,
       },
-      Name: Sequelize.STRING,
-      Descr: Sequelize.STRING,
-      Image: Sequelize.STRING,
-      Title: Sequelize.STRING,
+      userID: {
+        type: Sequelize.BIGINT,
+        allowNull: false,
+      },
+      date: {
+        type: Sequelize.DATE,
+        allowNull: false,
+      },
+      total: {
+        type: Sequelize.DECIMAL(18, 2),
+        allowNull: false,
+      },
+      status: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+      },
+      createdAt: {
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW,
+      },
+      updatedAt: {
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW,
+      },
+    });
+    await queryInterface.addConstraint('orders', {
+      fields: ['userID'],
+      type: 'foreign key',
+      name: 'fk_user_order',
+      references: {
+        table: 'users',
+        field: 'userID',
+      },
+    });
+
+    //Table OrderDetails
+    await queryInterface.createTable('orderDetails', {
+      orderDetailID: {
+        type: Sequelize.BIGINT,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      orderID: {
+        type: Sequelize.BIGINT,
+        allowNull: false,
+      },
+      productID: {
+        type: Sequelize.BIGINT,
+        allowNull: false,
+      },
+      price: {
+        type: Sequelize.DECIMAL(18, 2),
+        allowNull: false,
+      },
+      quantity: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+      },
+      status: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+      },
+      createdAt: {
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW,
+      },
+      updatedAt: {
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW,
+      },
+    });
+    await queryInterface.addConstraint('orderDetails', {
+      fields: ['orderID'],
+      type: 'foreign key',
+      name: 'fk_order',
+      references: {
+        table: 'orders',
+        field: 'orderID',
+      },
+    });
+    await queryInterface.addConstraint('orderDetails', {
+      fields: ['productID'],
+      type: 'foreign key',
+      name: 'fk_product_order',
+      references: {
+        table: 'products',
+        field: 'productID',
+      },
+    });
+
+    //Table Carts
+    await queryInterface.createTable('carts', {
+      cartID: {
+        type: Sequelize.BIGINT,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      userID: {
+        type: Sequelize.BIGINT,
+        allowNull: false,
+      },
+      createdAt: {
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW,
+      },
+      updatedAt: {
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW,
+      },
+    });
+    await queryInterface.addConstraint('carts', {
+      fields: ['userID'],
+      type: 'foreign key',
+      name: 'fk_user_cart',
+      references: {
+        table: 'users',
+        field: 'userID',
+      },
+    });
+
+    //Table CartItems
+    await queryInterface.createTable('cartItems', {
+      cartItemID: {
+        type: Sequelize.BIGINT,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      cartID: {
+        type: Sequelize.BIGINT,
+        allowNull: false,
+      },
+      productID: {
+        type: Sequelize.BIGINT,
+        allowNull: false,
+      },
+      quantity: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+      },
+      createdAt: {
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW,
+      },
+      updatedAt: {
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW,
+      },
+    });
+    await queryInterface.addConstraint('cartItems', {
+      fields: ['cartID'],
+      type: 'foreign key',
+      name: 'fk_cart',
+      references: {
+        table: 'carts',
+        field: 'cartID',
+      },
+    });
+    await queryInterface.addConstraint('cartItems', {
+      fields: ['productID'],
+      type: 'foreign key',
+      name: 'fk_product_cart',
+      references: {
+        table: 'products',
+        field: 'productID',
+      },
     });
   },
 
   async down(queryInterface, Sequelize) {
     // Xóa bảng theo thứ tự phụ thuộc
-    await queryInterface.dropTable('Slider');
-    await queryInterface.dropTable('Feedback');
-    await queryInterface.dropTable('Order_Detail');
-    await queryInterface.dropTable('Order');
-    await queryInterface.dropTable('Cart');
-    await queryInterface.dropTable('Product');
-    await queryInterface.dropTable('Category');
-    await queryInterface.dropTable('RefreshToken');
-    await queryInterface.dropTable('Users');
+    await queryInterface.dropTable('cartItems');
+    await queryInterface.dropTable('carts');
+    await queryInterface.dropTable('orderDetails');
+    await queryInterface.dropTable('orders');
+    await queryInterface.dropTable('productDetails');
+    await queryInterface.dropTable('products');
+    await queryInterface.dropTable('categories');
+    await queryInterface.dropTable('refreshTokens');
+    await queryInterface.dropTable('users');
+    await queryInterface.dropTable('roles');
+    await queryInterface.dropTable('brands');
   },
 };

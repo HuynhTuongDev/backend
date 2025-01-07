@@ -11,7 +11,7 @@ app.use(express.json()); // for JSON
 app.use(express.urlencoded({ extended: true })); // for form data
 
 // Khai báo API routes
-app.use('/api/', apiRoutes); // API route sẽ được định nghĩa trong ./routes/api.js
+app.use('/api', apiRoutes); // API route sẽ được định nghĩa trong ./routes/api.js
 
 // Lắng nghe server
 app.listen(port, () => {
