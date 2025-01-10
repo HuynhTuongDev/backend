@@ -65,5 +65,4 @@ const getAllProducts = async (req, res) => {
 module.exports = {
     getProducts,
     getAllProducts,
-
 };
