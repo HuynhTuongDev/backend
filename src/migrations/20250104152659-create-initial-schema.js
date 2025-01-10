@@ -417,6 +417,34 @@ module.exports = {
         field: 'productID',
       },
     });
+    // Table Sliders
+    await queryInterface.createTable('sliders', {
+      sliderID: {
+        type: Sequelize.BIGINT,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      imageURL: {
+        type: Sequelize.STRING(255),
+        allowNull: false,
+      },
+      title: {
+        type: Sequelize.STRING(100),
+        allowNull: true,
+      },
+      description: {
+        type: Sequelize.STRING(255),
+        allowNull: true,
+      },
+      createdAt: {
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW,
+      },
+      updatedAt: {
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW,
+      },
+    })
   },
 
   async down(queryInterface, Sequelize) {
