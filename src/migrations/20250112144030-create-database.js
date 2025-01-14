@@ -165,6 +165,16 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
+      discount: {
+        type: Sequelize.DECIMAL(5, 2),
+        allowNull: true,
+        defaultValue: 0.00, // mặc định là 0
+      },
+      sold: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        defaultValue: 0, // mặc định là 0
+      },
       categoryID: {
         type: Sequelize.BIGINT,
       },
