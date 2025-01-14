@@ -4,7 +4,7 @@ const {
   getUserByEmail,
 } = require("../services/userService");
 
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const saltRounds = 10;
 
 const createUser = async (req, res) => {
@@ -18,19 +18,15 @@ const createUser = async (req, res) => {
       });
     }
 
-    bcrypt.hash(password, saltRounds, async (err, hashed) => {
-      if (err) {
-        res.status(500).send({ message: "Failed to create user", error: err });
-      }
-      const data = await createUserService(
-        fullName,
-        email,
-        hashed,
-        phone,
-        address
-      );
-      res.status(200).json(data);
-    });
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    const data = await createUserService(
+      fullName,
+      email,
+      hashedPassword,
+      phone,
+      address
+    );
+    res.status(200).json(data);
   } catch (error) {
     console.log(error);
     res.status(500).send({ message: "Failed to create user", error: error });
@@ -54,29 +50,19 @@ const checkUserLogin = async (req, res) => {
   try {
     const user = await getUserByEmail(email);
     if (user) {
-      bcrypt.compare(password, user.password, (err, result) => {
-        if (err) {
-          res.status(401).json({
-            message: "Invalid credentials",
-          });
-        }
+      const checkUserPassword = await bcrypt.compare(password, user.password);
 
-        if (result) {
-          res.status(200).json({
-            message: "Login successful",
-            user,
-          });
-        } else {
-          res.status(401).json({
-            message: "Invalid credentials",
-          });
-        }
-      });
-    } else {
-      res.status(401).json({
-        message: "Invalid credentials",
-      });
+      if (checkUserPassword) {
+        res.status(200).json({
+          message: "Login successful",
+          user,
+        });
+      }
     }
+
+    res.status(401).json({
+      message: "Invalid credentials",
+    });
   } catch (error) {
     console.error("Error during login:", error);
     res.status(500).json({
