@@ -3,7 +3,7 @@ const productService = require('../services/productService');
 
 const getProducts = async (req, res) => {
     try {
-        let { sortOrder, page, size, categoryID } = req.query;
+        let { sortOrder, page, size, sortBy } = req.query;
 
         // Kiểm tra và xử lý các tham số đầu vào
         page = Math.max(parseInt(page) || 0, 0);
@@ -15,7 +15,7 @@ const getProducts = async (req, res) => {
             sortOrder,
             page,
             size,
-            categoryID: categoryID ? parseInt(categoryID) : undefined, // Chỉ truyền categoryID nếu có
+            sortBy,
         };
 
         // Gọi service để lấy sản phẩm
