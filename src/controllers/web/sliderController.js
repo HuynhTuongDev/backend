@@ -1,5 +1,5 @@
 // controllers/sliderController.js
-const { getAllSlidersService } = require('../services/sliderService');
+const { getAllSlidersService } = require('../../services/web/sliderService');
 
 // Lấy tất cả sliders và trả về dưới dạng JSON
 const getAllSlidersController = async (req, res) => {

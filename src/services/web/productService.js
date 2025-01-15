@@ -1,5 +1,5 @@
 // src/services/productService.js
-const db = require('../models'); // Giả sử bạn đang sử dụng Sequelize hoặc một ORM khác
+const db = require('../../models'); // Giả sử bạn đang sử dụng Sequelize hoặc một ORM khác
 
 const getProductsService = async ({ sortOrder, page, size, categoryID }) => {
     try {
