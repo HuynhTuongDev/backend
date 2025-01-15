@@ -1,4 +1,4 @@
-const { User, Role } = require('../models');
+const { User, Role } = require('../../models'); // Giả sử bạn đang sử dụng Sequelize hoặc một ORM khác
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 

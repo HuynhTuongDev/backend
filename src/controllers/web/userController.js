@@ -1,4 +1,4 @@
-const { createUserService, getAllUserService } = require('../services/userService')
+const { createUserService, getAllUserService } = require('../../services/web/userService')
 
 const createUser = async (req, res) => {
     const { fullName, email, password } = req.body;
@@ -14,5 +14,5 @@ const getAllUser = async (req, res) => {
 module.exports = {
     createUser,
     getAllUser,
-    
+
 }

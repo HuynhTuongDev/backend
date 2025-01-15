@@ -1,8 +1,8 @@
 const express = require('express');
-const { createUser, getAllUser } = require('../controllers/userController');
-const { getProducts } = require('../controllers/productController');
-const { getAllProducts } = require('../controllers/productController');
-const { getAllSlidersController } = require('../controllers/sliderController');
+const { createUser, getAllUser } = require('../../controllers/web/userController');
+const { getProducts } = require('../../controllers/web/productController');
+const { getAllProducts } = require('../../controllers/web/productController');
+const { getAllSlidersController } = require('../../controllers/web/sliderController');
 const apirouter = express.Router();
 
 // Định nghĩa các route

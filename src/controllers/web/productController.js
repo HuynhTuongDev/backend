@@ -1,5 +1,5 @@
 // src/controllers/homeController.js
-const productService = require('../services/productService');
+const productService = require('../../services/web/productService');
 
 const getProducts = async (req, res) => {
     try {

@@ -1,6 +1,5 @@
 // services/sliderService.js
-const db = require('../models');
-
+const db = require('../../models'); // Giả sử bạn đang sử dụng Sequelize hoặc một ORM khác
 // Lấy tất cả sliders
 const getAllSlidersService = async () => {
     try {
