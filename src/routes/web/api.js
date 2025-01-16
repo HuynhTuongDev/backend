@@ -1,5 +1,5 @@
 const express = require('express');
-const { createUser, getAllUser } = require('../../controllers/web/userController');
+const { createUser, getAllUser, checkUserLogin } = require('../../controllers/web/userController');
 const { getProducts } = require('../../controllers/web/productController');
 const { getAllProducts } = require('../../controllers/web/productController');
 const { getAllSlidersController } = require('../../controllers/web/sliderController');

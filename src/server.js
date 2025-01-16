@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const apiRoutes = require('./routes/api'); // Import đúng tệp userRoutes
+const apiRoutes = require('./routes/web/api'); // Import đúng tệp userRoutes
 const path = require('path');
 
 const app = express();
