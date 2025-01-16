@@ -254,6 +254,59 @@ module.exports = {
       },
     });
 
+    //Table Carts
+    await queryInterface.createTable('carts', {
+      cartID: {
+        type: Sequelize.BIGINT,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      userID: {
+        type: Sequelize.BIGINT,
+        allowNull: false,
+      },
+      productID: {
+        type: Sequelize.BIGINT,
+        allowNull: false,
+      },
+      quantity: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        defaultValue: 0,
+      },
+      createdAt: {
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW,
+      },
+      updatedAt: {
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW,
+      },
+    });
+    await queryInterface.addConstraint('carts', {
+      fields: ['userID'],
+      type: 'foreign key',
+      name: 'fk_user_cart',
+      references: {
+        table: 'users',
+        field: 'userID',
+      },
+    });
+    await queryInterface.addConstraint('carts', {
+      fields: ['productID'],
+      type: 'foreign key',
+      name: 'fk_product_cart',
+      references: {
+        table: 'products',
+        field: 'productID',
+      },
+    });
+    await queryInterface.addConstraint('carts', {
+      fields: ['userID', 'productID'],
+      type: 'unique',
+      name: 'unique_user_product',
+    });
+
     //Table Orders
     await queryInterface.createTable('orders', {
       orderID: {
@@ -341,6 +394,7 @@ module.exports = {
         field: 'orderID',
       },
     });
+    
     await queryInterface.addConstraint('orderDetails', {
       fields: ['productID'],
       type: 'foreign key',
@@ -350,83 +404,13 @@ module.exports = {
         field: 'productID',
       },
     });
-
-    //Table Carts
-    await queryInterface.createTable('carts', {
-      cartID: {
-        type: Sequelize.BIGINT,
-        primaryKey: true,
-        autoIncrement: true,
-      },
-      userID: {
-        type: Sequelize.BIGINT,
-        allowNull: false,
-      },
-      createdAt: {
-        type: Sequelize.DATE,
-        defaultValue: Sequelize.NOW,
-      },
-      updatedAt: {
-        type: Sequelize.DATE,
-        defaultValue: Sequelize.NOW,
-      },
-    });
-    await queryInterface.addConstraint('carts', {
-      fields: ['userID'],
-      type: 'foreign key',
-      name: 'fk_user_cart',
-      references: {
-        table: 'users',
-        field: 'userID',
-      },
+    
+    await queryInterface.addConstraint('orderDetails', {
+      fields: ['productID', 'orderID'],
+      type: 'unique',
+      name: 'unique_product_order',
     });
 
-    //Table CartItems
-    await queryInterface.createTable('cartItems', {
-      cartItemID: {
-        type: Sequelize.BIGINT,
-        primaryKey: true,
-        autoIncrement: true,
-      },
-      cartID: {
-        type: Sequelize.BIGINT,
-        allowNull: false,
-      },
-      productID: {
-        type: Sequelize.BIGINT,
-        allowNull: false,
-      },
-      quantity: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-      },
-      createdAt: {
-        type: Sequelize.DATE,
-        defaultValue: Sequelize.NOW,
-      },
-      updatedAt: {
-        type: Sequelize.DATE,
-        defaultValue: Sequelize.NOW,
-      },
-    });
-    await queryInterface.addConstraint('cartItems', {
-      fields: ['cartID'],
-      type: 'foreign key',
-      name: 'fk_cart',
-      references: {
-        table: 'carts',
-        field: 'cartID',
-      },
-    });
-    await queryInterface.addConstraint('cartItems', {
-      fields: ['productID'],
-      type: 'foreign key',
-      name: 'fk_product_cart',
-      references: {
-        table: 'products',
-        field: 'productID',
-      },
-    });
     // Table Sliders
     await queryInterface.createTable('sliders', {
       sliderID: {
@@ -459,16 +443,16 @@ module.exports = {
 
   async down(queryInterface, Sequelize) {
     // Xóa bảng theo thứ tự phụ thuộc
-    await queryInterface.dropTable('cartItems');
+    await queryInterface.dropTable('sliders');
     await queryInterface.dropTable('carts');
     await queryInterface.dropTable('orderDetails');
     await queryInterface.dropTable('orders');
     await queryInterface.dropTable('productDetails');
     await queryInterface.dropTable('products');
     await queryInterface.dropTable('categories');
+    await queryInterface.dropTable('brands');
     await queryInterface.dropTable('refreshTokens');
     await queryInterface.dropTable('users');
     await queryInterface.dropTable('roles');
-    await queryInterface.dropTable('brands');
   },
 };
