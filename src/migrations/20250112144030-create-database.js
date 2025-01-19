@@ -394,7 +394,7 @@ module.exports = {
         field: 'orderID',
       },
     });
-    
+
     await queryInterface.addConstraint('orderDetails', {
       fields: ['productID'],
       type: 'foreign key',
@@ -404,7 +404,7 @@ module.exports = {
         field: 'productID',
       },
     });
-    
+
     await queryInterface.addConstraint('orderDetails', {
       fields: ['productID', 'orderID'],
       type: 'unique',
@@ -438,7 +438,51 @@ module.exports = {
         type: Sequelize.DATE,
         defaultValue: Sequelize.NOW,
       },
-    })
+    });
+    //Table Posts
+    await queryInterface.createTable('posts', {
+      postID: {
+        type: Sequelize.BIGINT,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      userID: {
+        type: Sequelize.BIGINT,
+        allowNull: false,
+      },
+      title: {
+        type: Sequelize.STRING(100),
+        allowNull: false,
+      },
+      content: {
+        type: Sequelize.TEXT,
+        allowNull: false,
+      },
+      status: {
+        type: Sequelize.STRING(10),
+        allowNull: false, // Ví dụ: 'active', 'inactive'
+      },
+      createdAt: {
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW,
+      },
+      updatedAt: {
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW,
+      },
+    });
+
+    await queryInterface.addConstraint('posts', {
+      fields: ['userID'],
+      type: 'foreign key',
+      name: 'fk_user_post',
+      references: {
+        table: 'users',
+        field: 'userID',
+      },
+      onDelete: 'CASCADE', // Xóa bài viết khi xóa người dùng
+    });
+
   },
 
   async down(queryInterface, Sequelize) {
@@ -454,5 +498,6 @@ module.exports = {
     await queryInterface.dropTable('refreshTokens');
     await queryInterface.dropTable('users');
     await queryInterface.dropTable('roles');
+    await queryInterface.dropTable('posts');
   },
 };

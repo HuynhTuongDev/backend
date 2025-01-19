@@ -40,29 +40,61 @@ const getProducts = async (req, res) => {
         return res.status(500).json({ message: 'Error fetching products', error: error.message });
     }
 };
-
 const getAllProducts = async (req, res) => {
     try {
-        const products = await productService.getAllProductsService(); // Lấy dữ liệu từ service
+        const products = await productService.getAllProductsService();
         const productsWithFullImageLinks = products.map(product => {
             product.imageURL = `http://localhost:8082/${product.imageURL}`;
             return product;
         });
-        // Trả về kết quả dưới dạng mảng
-        return res.status(200).json({
-            data: productsWithFullImageLinks // Trả về mảng sản phẩm
-        });
+        if (productsWithFullImageLinks.length === 0) {
+            return res.status(404).json({ message: 'Không tìm thấy sản phẩm.' });
+        }
+        return res.status(200).json(products);
     } catch (error) {
-        console.error("Error fetching products:", error);
-        return res.status(500).json({
-            message: 'Lỗi khi lấy sản phẩm',
-            error: error.message,
-        });
+        console.error("Lỗi trong controller:", error);
+        return res.status(500).json({ message: 'Đã xảy ra lỗi khi lấy sản phẩm.' });
     }
 };
 
+const getProductsByBrand = async (req, res) => {
+    const { brandID } = req.params;
 
+    try {
+        const products = await productService.getProductsByBrandService(brandID); // Gọi dịch vụ để lấy sản phẩm
+        const productsWithFullImageLinks = products.map(product => {
+            product.imageURL = `http://localhost:8082/${product.imageURL}`;
+            return product;
+        });
+        if (productsWithFullImageLinks.length === 0) {
+            return res.status(404).json({ message: 'Không tìm thấy sản phẩm cho thương hiệu này.' });
+        }
+        return res.status(200).json(productsWithFullImageLinks);
+    } catch (error) {
+        console.error("Lỗi trong controller:", error);
+        return res.status(500).json({ message: 'Đã xảy ra lỗi khi lấy sản phẩm.' });
+    }
+};
+const getProductsByCategory = async (req, res) => {
+    const { categoryID } = req.params;
+    try {
+        const products = await productService.getProductsByCategoryService(categoryID);
+        const productsWithFullImageLinks = products.map(product => {
+            product.imageURL = `http://localhost:8082/${product.imageURL}`;
+            return product;
+        });
+        if (productsWithFullImageLinks.length === 0) {
+            return res.status(404).json({ message: 'Không tìm thấy sản phẩm cho thương hiệu này.' });
+        }
+        return res.status(200).json(productsWithFullImageLinks);
+    } catch (error) {
+        console.error("Lỗi trong controller:", error);
+        return res.status(500).json({ message: 'Đã xảy ra lỗi khi lấy sản phẩm.' });
+    }
+};
 module.exports = {
     getProducts,
     getAllProducts,
+    getProductsByBrand,
+    getProductsByCategory,
 };
