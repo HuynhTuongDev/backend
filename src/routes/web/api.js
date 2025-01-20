@@ -1,6 +1,6 @@
 const express = require('express');
 const { createUser, getAllUser, checkUserLogin } = require('../../controllers/web/userController');
-const { getProducts, getAllProducts, getProductsByBrand, getProductsByCategory } = require('../../controllers/web/productController');
+const { getProducts, getProductsByFilter } = require('../../controllers/web/productController');
 const { getAllBrands } = require('../../controllers/web/brandController');
 const { getAllCategories } = require('../../controllers/web/categoryController');
 const { getAllSlidersController } = require('../../controllers/web/sliderController');
@@ -13,9 +13,8 @@ apirouter.post('/users/login', checkUserLogin);
 
 //Product API
 apirouter.get('/products/sorted-and-paged', getProducts);
-apirouter.get('/products', getAllProducts);
-apirouter.get('/products/brand/:brandID', getProductsByBrand);
-apirouter.get('/products/category/:categoryID', getProductsByCategory);
+apirouter.get('/collections', getProductsByFilter); // Sử dụng query parameters
+
 
 apirouter.get('/slider', getAllSlidersController);
 
